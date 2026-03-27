@@ -1,0 +1,16 @@
+{
+  "title": "工作区教学",
+  "icon": "LayoutDashboard",
+  "pages": [
+    "index",
+    "---[SquarePen]写作与整理---",
+    "editor",
+    "assets",
+    "---[BookMarked]阅读与知识---",
+    "knowledge-base",
+    "immersive-reading",
+    "knowledge-graph",
+    "---[Bot]AI 协作---",
+    "assistant"
+  ]
+}

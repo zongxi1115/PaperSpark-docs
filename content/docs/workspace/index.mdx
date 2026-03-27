@@ -1,0 +1,102 @@
+---
+title: 工作区总览
+description: 先建立对 PaperSpark 主工作区的整体认知，再按模块深入阅读。
+icon: LayoutDashboard
+---
+
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Steps, Step } from 'fumadocs-ui/components/steps';
+import {
+  SquarePenIcon,
+  BookMarkedIcon,
+  BookOpenIcon,
+  PackageIcon,
+  BotIcon,
+  NetworkIcon,
+} from 'lucide-react';
+
+PaperSpark 不是把“编辑器、论文库、聊天框”硬拼在一起，而是把论文阅读、知识沉淀和写作交付放进同一个工作台。
+
+先记住这套分工：
+
+- 主编辑区：负责真正写作、插入引用、做版本和导出
+- 知识库：负责收论文、管理论文、把论文送进精读流程
+- 知识库精读：负责把 PDF 变成可跳转、可翻译、可问答的结构化内容
+- 资产库：负责保存你自己的摘录、想法、资料和中间成果
+- AI 助手：负责把当前文档、知识库、资产库三者串起来工作
+- 知识图谱：负责把单篇阅读扩展成多篇文章之间的关系视图
+
+<Callout type="info" title="先用对分层，再谈效率">
+不要把所有内容都直接塞进正文。更推荐的方式是：论文进知识库，私人材料进资产库，成稿留在主编辑区，AI 助手负责把三者联动起来。
+</Callout>
+
+[[img desc:工作区总览截图，标出左侧目录、中间主编辑区、右侧功能栏]]
+
+## 从哪里开始读
+
+<Cards>
+  <Card
+    href="/docs/workspace/editor"
+    icon={<SquarePenIcon />}
+    title="主编辑区"
+    description="标题、公式、引用、评论、版本历史和导出怎么用。"
+  />
+  <Card
+    href="/docs/workspace/knowledge-base"
+    icon={<BookMarkedIcon />}
+    title="知识库"
+    description="论文如何导入、管理、插入引用，以及如何进入精读。"
+  />
+  <Card
+    href="/docs/workspace/immersive-reading"
+    icon={<BookOpenIcon />}
+    title="知识库精读"
+    description="PDF 解析、翻译、批注、导读和问答的入口。"
+  />
+  <Card
+    href="/docs/workspace/assets"
+    icon={<PackageIcon />}
+    title="资产库"
+    description="如何把摘录、灵感、AI 回答和中间材料沉淀下来。"
+  />
+  <Card
+    href="/docs/workspace/assistant"
+    icon={<BotIcon />}
+    title="AI 助手"
+    description="知识库检索、资产引用、@提及和文档编辑的真实区别。"
+  />
+  <Card
+    href="/docs/workspace/knowledge-graph"
+    icon={<NetworkIcon />}
+    title="知识图谱"
+    description="文章之间的作者、概念、方法与关联如何形成。"
+  />
+</Cards>
+
+## 推荐使用顺序
+
+<Steps>
+  <Step>
+    先把论文导入知识库。来源可以是本地 PDF、Word、URL、Zotero，或者资料漫游检索结果。
+  </Step>
+  <Step>
+    对重点论文做解析，进入知识库精读。只有完成结构化解析后，论文才会真正变成可问答、可跳转、可建库的对象。
+  </Step>
+  <Step>
+    在精读中用高亮、批注、AI 导读和 AI 问答理解论文，再把有价值的想法沉淀到资产库。
+  </Step>
+  <Step>
+    回到主编辑区写作，从知识库插入引用，用 AI 助手调取知识库和资产库证据。
+  </Step>
+  <Step>
+    写作过程中用版本历史保护结构调整，用导出把成果送去下一步排版或协作。
+  </Step>
+</Steps>
+
+## 如果你现在的目标很明确
+
+- 想直接开始写论文：先读 [主编辑区](/docs/workspace/editor)
+- 想先整理论文书架：先读 [知识库](/docs/workspace/knowledge-base)
+- 想把 PDF 读深、读透：先读 [知识库精读](/docs/workspace/immersive-reading)
+- 想让 AI 真正理解你的材料：先读 [AI 助手](/docs/workspace/assistant)

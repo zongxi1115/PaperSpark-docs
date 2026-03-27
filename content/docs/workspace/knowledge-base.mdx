@@ -1,0 +1,108 @@
+---
+title: 知识库
+description: 论文如何进入 PaperSpark、如何管理，以及怎样进一步进入精读流程。
+icon: BookMarked
+---
+
+import { Steps, Step } from 'fumadocs-ui/components/steps';
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Accordions, Accordion } from 'fumadocs-ui/components/accordion';
+
+知识库是 PaperSpark 里所有论文资产的总入口。它不只是“收藏论文的地方”，也是后续精读、引用、RAG 检索和知识图谱的起点。
+
+## 论文可以从哪里进入知识库
+
+常见入口包括：
+
+- 上传本地 PDF
+- 上传 Word，系统先转 PDF 再进入流程
+- 输入 URL 导入
+- 配置 Zotero 后同步
+- 在资料漫游检索里找到论文后保存到知识库
+
+[[img desc:知识库列表页截图，展示导入按钮、论文卡片和状态标签]]
+
+## 一篇论文会经历怎样的状态变化
+
+<Steps>
+  <Step>
+    先进入知识库，带着标题、作者、摘要、来源和 PDF 信息。
+  </Step>
+  <Step>
+    当你对它发起解析后，系统会进入排队、解析和同步状态。
+  </Step>
+  <Step>
+    解析完成后，这篇论文会拥有精读缓存，成为“知识库精读”的候选。
+  </Step>
+  <Step>
+    如果后续完成建库，它还会进一步支持更强的 AI 检索与问答。
+  </Step>
+</Steps>
+
+## 知识库里最值得关注的几个状态
+
+<Accordions type="single" collapsible>
+  <Accordion title="PDF">
+    说明这篇条目带有可阅读的原始文件，可以继续下载或进入沉浸式阅读。
+  </Accordion>
+  <Accordion title="精读">
+    说明它已经完成结构化解析，可以进入知识库精读继续深读。
+  </Accordion>
+  <Accordion title="RAG">
+    说明它已经建立检索索引，AI 助手更容易按内容召回这篇论文。
+  </Accordion>
+  <Accordion title="排队中 / 解析中 / 建库中">
+    说明论文正在从“文件”变成“可问答、可跳转、可关联的知识对象”。
+  </Accordion>
+</Accordions>
+
+## “插入到文档”到底在做什么
+
+知识库里的“插入到文档”不是把整篇文章贴进正文，而是在做一件更像写论文的事：
+
+- 把当前论文作为引用插入到主编辑区
+- 自动同步到文末参考文献区
+
+因此它更适合这些场景：
+
+- 给某个论断补出处
+- 把新读到的论文纳入当前文稿
+- 从知识库快速建立参考文献链
+
+## 什么时候它会变成“知识库精读”
+
+这点非常关键：
+
+导入知识库，不等于已经进入精读。
+
+只有当一篇论文完成结构化解析后，它才会：
+
+- 获得页面块和全文内容
+- 出现精读缓存标记
+- 出现在右侧栏的“知识库精读”面板
+- 后续继续参与 RAG 和图谱关系
+
+下一步最值得接着读的是 [知识库精读](/docs/workspace/immersive-reading)。
+
+<Callout type="warn" title="导入成功只是第一步">
+如果你只是把论文放进知识库，它还只是一个条目；当解析完成后，它才真正变成系统里的“可互动内容”。
+</Callout>
+
+[[img desc:同一篇论文在知识库中从普通条目变成带“精读 / RAG”标记状态的前后对比]]
+
+## 资料漫游检索和知识库的关系
+
+资料漫游检索并不是知识库之外的另一个世界。更准确地说，它是知识库的外部采集入口。
+
+更推荐的顺序是：
+
+1. 先在资料漫游检索里找方向和候选论文
+2. 把值得保留的论文保存到知识库
+3. 再从知识库里决定哪些论文值得进入精读
+
+这样知识库会更接近你真实的研究路径，而不是堆满还没筛过的论文。
+
+## 继续阅读
+
+- 想看解析后的论文怎么深读：去 [知识库精读](/docs/workspace/immersive-reading)
+- 想看这些论文怎样成为 AI 助手证据：去 [AI 助手](/docs/workspace/assistant)

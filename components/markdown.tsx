@@ -15,14 +15,32 @@ import { Fragment, jsx, jsxs } from 'react/jsx-runtime';
 import { DynamicCodeBlock } from 'fumadocs-ui/components/dynamic-codeblock';
 import defaultMdxComponents from 'fumadocs-ui/mdx';
 import { visit } from 'unist-util-visit';
-import type { ElementContent, Root, RootContent } from 'hast';
+
+type HastTextNode = {
+  type: 'text';
+  value: string;
+};
+
+type HastElementNode = {
+  type: 'element';
+  tagName: string;
+  properties: Record<string, unknown>;
+  children: HastContent[];
+};
+
+type HastContent = HastTextNode | HastElementNode;
+
+type HastRoot = {
+  type: 'root';
+  children: HastContent[];
+};
 
 export interface Processor {
   process: (content: string) => Promise<ReactNode>;
 }
 
 export function rehypeWrapWords() {
-  return (tree: Root) => {
+  return (tree: HastRoot) => {
     visit(tree, ['text', 'element'], (node, index, parent) => {
       if (node.type === 'element' && node.tagName === 'pre') return 'skip';
       if (node.type !== 'text' || !parent || index === undefined) return;
@@ -30,7 +48,7 @@ export function rehypeWrapWords() {
       const words = node.value.split(/(?=\s)/);
 
       // Create new span nodes for each word and whitespace
-      const newNodes: ElementContent[] = words.flatMap((word) => {
+      const newNodes: HastContent[] = words.flatMap((word: string) => {
         if (word.length === 0) return [];
 
         return {
@@ -48,7 +66,7 @@ export function rehypeWrapWords() {
         tagName: 'span',
         properties: {},
         children: newNodes,
-      } satisfies RootContent);
+      } satisfies HastElementNode);
       return 'skip';
     });
   };

@@ -1,0 +1,261 @@
+---
+title: 部署指南
+description: 当你已经明确部署方式后，再看这页；它不再重复 QuickStart。
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Cards, Card } from 'fumadocs-ui/components/card';
+import { ServerIcon, ContainerIcon, CloudIcon, WrenchIcon } from 'lucide-react';
+
+这页只讲“**你已经决定怎么部署之后**”要用的命令和差异。  
+如果你只是第一次上手，请先读 [QuickStart](/docs/quickstart)。
+
+## 先选部署方式
+
+| 方式 | 适合谁 | 说明 |
+| --- | --- | --- |
+| 本地源码 | 开发者、本地调试 | 最容易看清项目结构，适合改代码 |
+| Docker 预构建镜像 | 想快速起服务的用户 | 推荐使用 `deploy/` 目录 |
+| Modal OCR | 本机不想长期维护 OCR / GPU 的用户 | 只把 OCR / RAG 服务放到 Modal，前端仍可本地或自托管 |
+| 根目录源码 Docker Compose | 需要从源码构建容器的开发者 | 更适合开发测试，不是普通用户的首选入口 |
+
+<Cards>
+  <Card icon={<WrenchIcon />} title="本地源码" description="适合开发和调试，最容易看清项目结构。" />
+  <Card icon={<ContainerIcon />} title="Docker" description="适合快速体验和长期运行，优先用 deploy/ 目录。" />
+  <Card icon={<CloudIcon />} title="Modal OCR" description="前端照常运行，只把 OCR / RAG 托管到云端。" />
+</Cards>
+
+## Docker 部署
+
+对最终用户来说，应该优先使用仓库里的 `deploy/` 目录。
+
+原因是：
+
+- `deploy/` 使用预构建镜像，步骤更少
+- 仓库根目录的 `docker-compose.yml` 是“从源码构建”的开发用途 compose
+- 两套 compose 的使用场景不同，不建议混用
+
+### 1. 拉取仓库并进入 `deploy/`
+
+```bash
+git clone https://github.com/zongxi1115/paperspark.git
+cd paperspark/deploy
+```
+
+### 2. 复制环境变量
+
+```bash
+cp .env.example .env
+```
+
+Windows PowerShell：
+
+```powershell
+Copy-Item .env.example .env
+```
+
+至少建议填好下面三组变量：
+
+- `NEXT_PUBLIC_SMALL_MODEL_*`
+- `NEXT_PUBLIC_LARGE_MODEL_*`
+- `NEXT_PUBLIC_EMBEDDING_*`
+
+如果你使用仓库当前默认公开镜像，一般不需要改镜像地址；`deploy/docker-compose.yml` 当前默认拉取的是 `xiaozongxi/paperspark-*` 镜像。
+
+
+### 3. 启动 GPU 版本（推荐）
+
+前提条件：
+
+- 主机有 NVIDIA GPU
+- 已安装 NVIDIA 驱动
+- 已安装 NVIDIA Container Toolkit
+
+建议先验证 GPU 是否可被 Docker 正确识别：
+
+```bash
+docker run --gpus all nvidia/cuda:12.6.3-base-ubuntu24.04 nvidia-smi
+```
+
+然后在 `.env` 中按需设置：
+
+```ini
+SURYA_GPU_VERSION=gpu-cu126
+SURYA_MAX_WORKERS=4
+```
+
+再使用 GPU 覆盖 compose：
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.gpu.yml pull
+docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
+```
+
+这里有个非常容易漏掉的点：`pull` 和 `up` 两个命令都要带 `-f docker-compose.gpu.yml`，否则你拉取和启动的不是同一组配置。
+
+
+
+### 4. 启动 CPU 版本（仅在没有 NVIDIA GPU 时考虑）
+
+<Callout type="warning" title="CPU 版只适合兜底">
+如果你没有 NVIDIA GPU，或者只是想短暂验证服务是否能启动，可以用 CPU 版。  
+但在论文解析、翻译和精读场景下，CPU 版的速度会明显更慢。
+</Callout>
+
+```bash
+docker compose up -d
+```
+
+检查服务状态：
+
+```bash
+docker compose ps
+docker compose logs -f nextjs
+docker compose logs -f surya-ocr
+```
+
+默认访问地址：
+
+```text
+http://localhost:3000
+```
+
+
+### 5. 更新与停止
+
+```bash
+docker compose down
+docker compose pull
+docker compose up -d
+```
+
+如果是 GPU 版本，请把同样的 `-f docker-compose.gpu.yml` 带上。
+
+## 本地源码部署
+
+这条路径适合开发和调试。  
+如果你只是想把项目先跑起来，这里和 [QuickStart](/docs/quickstart) 的本地命令是一致的，只是把可选启动方式补全了。
+
+### 1. 安装依赖
+
+```bash
+git clone https://github.com/zongxi1115/paperspark.git
+cd paperspark
+cp .env.local.example .env.local
+pnpm install
+```
+
+Windows PowerShell：
+
+```powershell
+Copy-Item .env.local.example .env.local
+pnpm install
+```
+
+### 2. 启动前端
+
+```bash
+pnpm dev
+```
+
+### 3. 启动 OCR 微服务
+
+推荐入口：
+
+```bash
+python scripts/start_surya_service.py --accelerator cpu
+```
+
+GPU 示例：
+
+```bash
+python scripts/start_surya_service.py --accelerator gpu --cuda cu126
+```
+
+如果依赖已经准备好，也可以使用包装脚本：
+
+```powershell
+.\scripts\start-surya-service.ps1
+```
+
+```bash
+./scripts/start-surya-service.sh --accelerator cpu
+```
+
+### 4. 本地部署里需要注意的点
+
+- `pnpm dev` 不会启动 OCR 服务，两者必须分开启动
+- `start_surya_service.py` 会帮你安装依赖并选择 Torch 通道，适合第一次跑
+- `start-surya-service.ps1` 默认假定你已经有可用 Python 环境，并会尝试 `conda activate base`
+- OCR 默认地址是 `http://127.0.0.1:8765`
+
+## Modal OCR 部署
+
+这条路径的核心思路是：前端照常跑在本地或你自己的服务器上，但把 Surya OCR / RAG 服务部署到 Modal。
+
+### 1. 安装 Modal 依赖
+
+```powershell
+python -m pip install -r services/surya_ocr_service/requirements-modal.txt
+python -m modal setup
+```
+
+### 2. 部署 Surya OCR 到 Modal
+
+仓库已经提供 PowerShell 包装脚本：
+
+```powershell
+.\scripts\deploy-surya-modal.ps1
+```
+
+如果你只想本地联调，也可以：
+
+```powershell
+.\scripts\deploy-surya-modal.ps1 -Mode serve
+```
+
+部署完成后，Modal 会返回一个 Web Endpoint，形如：
+
+```text
+https://your-name--paperspark-surya-web.modal.run
+```
+
+### 3. 把前端环境变量改到同一个 Endpoint
+
+```ini
+SURYA_OCR_SERVICE_URL=https://your-modal-endpoint
+SURYA_SERVICE_URL=https://your-modal-endpoint
+NEXT_PUBLIC_SURYA_SERVICE_URL=https://your-modal-endpoint
+NEXT_PUBLIC_SURYA_OCR_SERVICE_URL=https://your-modal-endpoint
+```
+
+建议四个变量都写成同一个值，避免 OCR 解析与 RAG 检索跑到不同后端。
+
+## 这页和 QuickStart 的区别
+
+- [QuickStart](/docs/quickstart)：只讲最快上手
+- 本页：只讲部署路径差异和更完整的部署命令
+
+## 已统一的口径
+
+这套部署文档当前统一了这些规则：
+
+- 面向普通用户的 Docker 教程统一以 `deploy/` 目录为准，不再把它和仓库根目录的源码构建 compose 混在一起
+- 命令统一使用 `docker compose`，不再默认使用旧的 `docker-compose`
+- 本地启动明确区分“前端”和“OCR 微服务”两个进程
+- 本地第一次运行推荐使用 `python scripts/start_surya_service.py`，而不是默认把 PowerShell 包装脚本当成唯一入口
+- GPU 验证与推荐镜像口径统一到了当前仓库使用的 `CUDA 12.6`
+
+## 数据持久化提醒
+
+无论你用本地部署还是 Docker，当前都需要特别注意这件事：
+
+- PaperSpark 的核心用户数据目前仍以浏览器 `localStorage` 为主
+- Docker 卷主要持久化的是 Surya 任务、OCR 产物和 Chroma 向量数据
+
+所以当前部署更接近：
+
+- “服务端能力可持续运行”
+- 但“核心工作区数据仍然跟浏览器绑定”
+
+如果你后续计划做多人共用、跨设备同步或真正的服务端持久化，这会是下一阶段需要补强的架构点。

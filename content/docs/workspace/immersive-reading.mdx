@@ -1,0 +1,97 @@
+---
+title: 知识库精读
+description: 论文从 PDF 变成结构化阅读对象之后，你可以怎样深读、提问、翻译和做批注。
+icon: BookOpen
+---
+
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { LanguagesIcon, MessageSquareIcon, SparklesIcon } from 'lucide-react';
+
+知识库精读是 PaperSpark 最有“读论文工作台”感觉的部分。进入这里之后，一篇论文不再只是 PDF 文件，而是会变成可跳转、可提问、可翻译、可标注的结构化内容。
+
+## 进入后，你会同时看到两种阅读视角
+
+<Tabs items={["PDF 视图", "HTML 视图"]}>
+  <Tab>
+    更适合保留原始版面、图表位置和分页感觉，适合习惯按页阅读的用户。
+  </Tab>
+  <Tab>
+    更适合顺着结构块阅读、快速定位段落、双栏对照和跳转，适合做精读和问答。
+  </Tab>
+</Tabs>
+
+[[img desc:沉浸式阅读页面截图，展示 PDF/HTML 切换、右侧信息栏和顶部工具栏]]
+
+## 这里最常用的五类能力
+
+<Cards>
+  <Card icon={<LanguagesIcon />} title="翻译" description="支持显示/隐藏译文，以及覆盖模式或双栏模式。" />
+  <Card icon={<SparklesIcon />} title="AI 导读" description="自动生成概要、结构、重点和段落讲解。" />
+  <Card icon={<MessageSquareIcon />} title="AI 问答" description="围绕当前论文和选中文本做带证据的问答。" />
+</Cards>
+
+论文解析完成后，精读页通常会继续长出这些能力：
+
+- 高亮与文本批注
+- 选区提问
+- AI 导读
+- RAG 建库
+- 自动图谱分析
+
+## 选中文本提问，是精读区最自然的入口
+
+无论你在 PDF 视图还是 HTML 视图里，只要选中一段文字，都可以把它直接送去问 AI。
+
+这时 AI 不只是看你的问题，还会优先结合：
+
+- 当前论文相关段落
+- 选中的具体原文
+- 已经建立的 RAG 检索结果
+
+回答中的引用还能直接跳回原文页码或对应段落，这对精读非常重要。
+
+## AI 导读适合解决什么问题
+
+AI 导读不是简单摘要。它更像“帮助你迅速建立论文地图”的工具，通常会给出：
+
+- 文章概要
+- 文章结构
+- 文章重点
+- 段落讲解
+
+更推荐的用法是：
+
+- 第一次读时先看概要和结构
+- 第二次读时结合重点和段落讲解细读
+- 读到不明白的局部，再切去 AI 问答继续追问
+
+## 批注和高亮适合什么时候用
+
+精读页的批注能力适合做三种事情：
+
+- 标出必须回正文引用的关键证据
+- 记录对某一页或某一段的即时理解
+- 给未来的自己留下“这里要继续查”之类的提醒
+
+它适合阅读阶段，不建议把所有临时想法都直接塞回论文正文。
+
+## 解析完成后，这篇论文会多出两条后续能力
+
+<Callout type="success" title="解析后的价值不只在阅读">
+一篇论文完成结构化解析后，系统通常会继续为它补出 RAG 检索能力和知识图谱关系。这也是为什么“精读”会成为知识库和 AI 助手之间的重要中间层。
+</Callout>
+
+这两条能力分别服务：
+
+- AI 助手按内容召回证据
+- 多篇文章之间的关系理解
+
+[[img desc:精读页中选区提问、AI 导读和批注并存的界面截图]]
+
+## 继续阅读
+
+- 想知道论文是怎样进入这里的：去 [知识库](/docs/workspace/knowledge-base)
+- 想看精读结果如何进入问答：去 [AI 助手](/docs/workspace/assistant)
+- 想看多篇文章之间的关系怎么展开：去 [知识图谱](/docs/workspace/knowledge-graph)

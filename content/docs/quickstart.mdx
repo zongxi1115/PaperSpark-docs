@@ -1,0 +1,138 @@
+---
+title: QuickStart
+description: 第一次上手时，只看这一页就够了。
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Steps, Step } from 'fumadocs-ui/components/steps';
+import { Card, Cards } from 'fumadocs-ui/components/card';
+import { RocketIcon, ServerIcon, LayoutDashboardIcon } from 'lucide-react';
+
+这页只回答一件事：**怎样最快把 PaperSpark 跑起来。**
+
+如果你现在只想先体验，不想研究完整部署细节，就按这页来。  
+如果你已经明确要用 Docker、Modal 或长期运行环境，再看 [部署指南](/docs/deployment)。
+
+## 先记住 PaperSpark 是双进程
+
+- `pnpm dev`：启动前端，默认是 `http://localhost:3000`
+- `Surya OCR`：单独启动，默认是 `http://127.0.0.1:8765`
+
+简化理解：
+
+- 只开前端：能写作、配置模型、浏览界面
+- 前端 + OCR 都开：才能完整体验 PDF 解析、精读、翻译、RAG 和图谱
+
+## 环境要求
+
+- Node.js `20 LTS`
+- `pnpm`
+- Python `3.10+`
+- Git
+
+## 5 分钟启动
+
+<Steps>
+  <Step>
+    克隆仓库并安装依赖。
+
+    ```bash
+    git clone https://github.com/zongxi1115/paperspark.git
+    cd paperspark
+    pnpm install
+    ```
+  </Step>
+  <Step>
+    复制环境变量示例。
+
+    ```bash
+    cp .env.local.example .env.local
+    ```
+
+    Windows PowerShell：
+
+    ```powershell
+    Copy-Item .env.local.example .env.local
+    ```
+  </Step>
+  <Step>
+    启动前端。
+
+    ```bash
+    pnpm dev
+    ```
+  </Step>
+  <Step>
+    另开一个终端启动 OCR 服务。
+
+    ```bash
+    python scripts/start_surya_service.py --accelerator cpu
+    ```
+  </Step>
+  <Step>
+    打开浏览器访问：
+
+    ```text
+    http://localhost:3000
+    ```
+  </Step>
+</Steps>
+
+## 第一次进应用后先做什么
+
+1. 打开设置页，填好模型配置
+2. 测一下模型接口能否连通
+3. 导入一篇 PDF
+4. 进入沉浸式阅读，确认解析和问答能正常工作
+
+## 你真正需要改的环境变量
+
+最重要的是三组模型配置：
+
+- `NEXT_PUBLIC_SMALL_MODEL_*`
+- `NEXT_PUBLIC_LARGE_MODEL_*`
+- `NEXT_PUBLIC_EMBEDDING_*`
+
+OCR 地址默认已经指向本机，一般不用改：
+
+```ini
+SURYA_OCR_SERVICE_URL=http://127.0.0.1:8765
+SURYA_SERVICE_URL=http://127.0.0.1:8765
+NEXT_PUBLIC_SURYA_SERVICE_URL=http://127.0.0.1:8765
+NEXT_PUBLIC_SURYA_OCR_SERVICE_URL=http://127.0.0.1:8765
+```
+
+## 最容易踩的坑
+
+<Callout type="warn" title="最常见误解">
+`pnpm dev` 不会自动启动 OCR。  
+如果你发现页面能打开，但 PDF 解析、精读、翻译或 RAG 不工作，第一件事就是确认 OCR 服务有没有单独跑起来。
+</Callout>
+
+<Callout type="info" title="数据存储提醒">
+当前核心工作区数据主要保存在浏览器里，不是全量服务端持久化。  
+所以清空浏览器站点数据后，文档、知识库和设置也会一起丢失。
+</Callout>
+
+## 接下来读哪页
+
+<Cards>
+  <Card
+    href="/docs/workspace"
+    icon={<LayoutDashboardIcon />}
+    title="工作区教学"
+    description="开始真正理解主编辑区、知识库、资产库和 AI 助手如何联动。"
+  />
+  <Card
+    href="/docs/deployment"
+    icon={<ServerIcon />}
+    title="部署指南"
+    description="当你决定用 Docker、Modal 或长期运行环境时再看这一页。"
+  />
+  <Card
+    href="/docs/workspace/editor"
+    icon={<RocketIcon />}
+    title="直接看主编辑区"
+    description="如果你已经跑起来了，下一步最推荐先看写作区怎么用。"
+  />
+</Cards>
