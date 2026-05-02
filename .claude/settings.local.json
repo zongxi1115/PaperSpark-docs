@@ -4,7 +4,13 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(curl *)",
       "Bash(npx tsc *)",
-      "Bash(pnpm add *)"
+      "Bash(pnpm add *)",
+      "WebFetch(domain:github.com)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('Tag:', d.get\\('tag_name',''\\)\\); [print\\(f' {a[\\\\\"name\\\\\"]}: {a[\\\\\"browser_download_url\\\\\"]}'\\) for a in d.get\\('assets',[]\\)]\")",
+      "Bash(python -c \"import sys,json; data=json.load\\(sys.stdin\\); print\\('Count:', len\\(data\\)\\); [print\\(f'Tag: {r[\\\\\"tag_name\\\\\"]}, Assets: {[a[\\\\\"name\\\\\"] for a in r.get\\(\\\\\"assets\\\\\",[]\\)]}'\\) for r in data[:3]]\")",
+      "Bash(python -c ' *)",
+      "Bash(python -c \"import sys; print\\(sys.stdin.read\\(\\)[:3000]\\)\")",
+      "Bash(pnpm build *)"
     ]
   }
 }

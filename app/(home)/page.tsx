@@ -1,11 +1,54 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Download, ChevronDown, Apple, Monitor, ArrowUpRight, BookOpen, Upload, BookMarked, Network, FileEdit } from 'lucide-react';
 import { ChangelogTrigger } from './changelog-section';
+
+const CHANGELOG_URL =
+  'https://raw.githubusercontent.com/zongxi1115/PaperSpark/refs/heads/master/CHANGELOG.md';
+
+function useLatestVersion() {
+  const [version, setVersion] = useState('');
+  useEffect(() => {
+    fetch(CHANGELOG_URL)
+      .then((r) => r.text())
+      .then((text) => {
+        const match = text.match(/^#{1,2}\s+\[?(\d+\.\d+\.\d+)/m);
+        if (match) setVersion(match[1]);
+      })
+      .catch(() => {});
+  }, []);
+  return version;
+}
+
+function Tooltip({ children, text }: { children: React.ReactNode; text: string }) {
+  return (
+    <span className="group/tip relative inline-flex">
+      {children}
+      <span className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-slate-900 dark:bg-slate-700 px-3 py-1.5 text-xs text-white opacity-0 group-hover/tip:opacity-100 transition-opacity duration-200 shadow-lg z-50">
+        {text}
+        <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-slate-900 dark:border-t-slate-700"></span>
+      </span>
+    </span>
+  );
+}
 
 export default function HomePage() {
   const pathRef = useRef<SVGPathElement>(null);
+  const [downloadOpen, setDownloadOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const version = useLatestVersion();
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDownloadOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const path = pathRef.current;
@@ -13,12 +56,15 @@ export default function HomePage() {
     const length = path.getTotalLength();
     path.style.strokeDasharray = `${length}`;
     path.style.strokeDashoffset = `${length}`;
-    // Trigger draw animation after mount
     requestAnimationFrame(() => {
       path.style.transition = 'stroke-dashoffset 1.2s cubic-bezier(0.22, 1, 0.36, 1)';
       path.style.strokeDashoffset = '0';
     });
   }, []);
+
+  const downloadBase = version
+    ? `https://github.com/zongxi1115/PaperSpark/releases/download/v${version}`
+    : '';
 
   return (
     <div className="relative min-h-screen bg-[#faf9f7] dark:bg-[#0c0a14] transition-colors duration-700 overflow-hidden font-sans selection:bg-indigo-500/30">
@@ -86,28 +132,94 @@ export default function HomePage() {
 
         {/* CTA buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
-          <a href="https://paper.062679.xyz" target="_blank" rel="noopener noreferrer" className="group w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold text-sm hover:-translate-y-0.5 transition-all duration-300 shadow-lg shadow-slate-900/15 dark:shadow-white/10 text-center">
-            <span className="flex items-center justify-center gap-2">
+          <Tooltip text="点击前往体验在线预览">
+            <a href="https://paper.062679.xyz" target="_blank" rel="noopener noreferrer" className="group w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold text-sm hover:-translate-y-0.5 transition-all duration-300 shadow-lg shadow-slate-900/15 dark:shadow-white/10 text-center flex items-center justify-center gap-2">
               在线体验
-              <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-            </span>
-          </a>
-          <Link href="/docs" className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 font-medium text-sm border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:-translate-y-0.5 transition-all duration-300 text-center">
-            阅读文档本地部署！
-          </Link>
+              <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </a>
+          </Tooltip>
+
+          {/* Download dropdown - hover triggered */}
+          <div
+            className="relative w-full sm:w-auto"
+            ref={dropdownRef}
+            onMouseEnter={() => setDownloadOpen(true)}
+            onMouseLeave={() => setDownloadOpen(false)}
+          >
+            <button
+              onClick={() => setDownloadOpen(!downloadOpen)}
+              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 font-medium text-sm border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:-translate-y-0.5 transition-all duration-300 text-center flex items-center justify-center gap-2"
+            >
+              <Download className="w-4 h-4" />
+              下载
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${downloadOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {downloadOpen && (
+              <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 w-56 z-50">
+                <div className="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 shadow-xl shadow-slate-900/10 dark:shadow-black/30 overflow-hidden">
+                  {version && (
+                    <>
+                      <a
+                        href={`${downloadBase}/PaperSpark-${version}-mac-arm64.dmg`}
+                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                      >
+                        <Apple className="w-4 h-4 text-slate-400" />
+                        <div className="flex flex-col">
+                          <span>Mac OS (.dmg)</span>
+                          <span className="text-[11px] text-slate-400 dark:text-slate-500">Apple Silicon</span>
+                        </div>
+                      </a>
+                      <div className="border-t border-slate-100 dark:border-white/5"></div>
+                      <a
+                        href={`${downloadBase}/PaperSpark-${version}-mac-arm64.zip`}
+                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                      >
+                        <Apple className="w-4 h-4 text-slate-400" />
+                        <div className="flex flex-col">
+                          <span>Mac OS (.zip)</span>
+                          <span className="text-[11px] text-slate-400 dark:text-slate-500">Apple Silicon</span>
+                        </div>
+                      </a>
+                      <div className="border-t border-slate-100 dark:border-white/5"></div>
+                      <a
+                        href={`${downloadBase}/PaperSpark-${version}-setup.exe`}
+                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                      >
+                        <Monitor className="w-4 h-4 text-slate-400" />
+                        <div className="flex flex-col">
+                          <span>Windows (.exe)</span>
+                          <span className="text-[11px] text-slate-400 dark:text-slate-500">安装包</span>
+                        </div>
+                      </a>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <Tooltip text="获取本地部署方案或教程内容">
+            <Link
+              href="/docs"
+              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 font-medium text-sm border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:-translate-y-0.5 transition-all duration-300 text-center inline-flex items-center justify-center gap-2"
+            >
+              <BookOpen className="w-4 h-4" />
+              阅读文档
+            </Link>
+          </Tooltip>
           <ChangelogTrigger />
         </div>
 
         {/* Feature tags */}
         <div className="flex flex-wrap justify-center gap-2.5 text-xs font-medium text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-0">
           {[
-            { icon: 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12', label: '文献导入', color: 'bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-200/40 dark:border-teal-500/15' },
-            { icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', label: '沉浸式阅读', color: 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200/40 dark:border-indigo-500/15' },
-            { icon: 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', label: '知识图谱', color: 'bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-200/40 dark:border-violet-500/15' },
-            { icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z', label: '论文编辑', color: 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200/40 dark:border-rose-500/15' },
+            { icon: Upload, label: '文献导入', color: 'bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-200/40 dark:border-teal-500/15' },
+            { icon: BookMarked, label: '沉浸式阅读', color: 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200/40 dark:border-indigo-500/15' },
+            { icon: Network, label: '知识图谱', color: 'bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-200/40 dark:border-violet-500/15' },
+            { icon: FileEdit, label: '论文编辑', color: 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200/40 dark:border-rose-500/15' },
           ].map((f) => (
             <div key={f.label} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border ${f.color} transition-transform hover:-translate-y-0.5 cursor-default`}>
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d={f.icon}/></svg>
+              <f.icon className="w-3.5 h-3.5" />
               {f.label}
             </div>
           ))}
