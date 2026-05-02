@@ -1,4 +1,4 @@
 {
   "title": "PaperSpark Docs",
-  "pages": ["index", "quickstart", "workspace", "deployment"]
+  "pages": ["index", "quickstart", "workspace", "deployment", "changelog"]
 }

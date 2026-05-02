@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
+import { ChangelogTrigger } from './changelog-section';
 
 export default function HomePage() {
   const pathRef = useRef<SVGPathElement>(null);
@@ -94,6 +95,7 @@ export default function HomePage() {
           <Link href="/docs" className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 font-medium text-sm border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:-translate-y-0.5 transition-all duration-300 text-center">
             阅读文档本地部署！
           </Link>
+          <ChangelogTrigger />
         </div>
 
         {/* Feature tags */}
