@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { Download, ChevronDown, Apple, Monitor, ArrowUpRight, BookOpen, Upload, BookMarked, Network, FileEdit } from 'lucide-react';
+import { Download, ChevronDown, ArrowUpRight, BookOpen, Upload, BookMarked, Network, FileEdit } from 'lucide-react';
 import { ChangelogTrigger } from './changelog-section';
 
 const CHANGELOG_URL =
@@ -24,13 +24,29 @@ function useLatestVersion() {
 
 function Tooltip({ children, text }: { children: React.ReactNode; text: string }) {
   return (
-    <span className="group/tip relative inline-flex">
+    <span className="group/tip relative inline-flex w-full sm:w-auto">
       {children}
       <span className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-slate-900 dark:bg-slate-700 px-3 py-1.5 text-xs text-white opacity-0 group-hover/tip:opacity-100 transition-opacity duration-200 shadow-lg z-50">
         {text}
         <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-slate-900 dark:border-t-slate-700"></span>
       </span>
     </span>
+  );
+}
+
+function AppleIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+    </svg>
+  );
+}
+
+function WindowsIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M3 12V6.5l8-1.09v6.59H3zm0 .73h8v6.69l-8-1.09v-5.6zM11.5 5.19l9.5-1.3v7.14h-9.5V5.19zm0 7.06h9.5v7.45l-9.5-1.3v-6.15z" />
+    </svg>
   );
 }
 
@@ -76,10 +92,10 @@ export default function HomePage() {
       <div className="relative z-10 pt-20 md:pt-24 pb-8 px-6 max-w-6xl mx-auto">
         {/* Announcement pill */}
         <div className="flex justify-center mb-10">
-          <a href="#" className="group inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50/80 dark:bg-amber-500/10 border border-amber-200/50 dark:border-amber-500/15 transition-all duration-300 hover:border-amber-300/70">
-            <span className="text-sm">🥳</span>
-            <span className=" text-amber-700 dark:text-amber-300">
-              v0.7.0 首个开源论文写作一站式工具！
+          <a href="#" className="group inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-full bg-amber-50/80 dark:bg-amber-500/10 border border-amber-200/50 dark:border-amber-500/15 transition-all duration-300 hover:border-amber-300/70 max-w-full">
+            <span className="text-sm shrink-0">🥳</span>
+            <span className="text-amber-700 dark:text-amber-300 text-sm sm:text-base whitespace-nowrap sm:whitespace-normal">
+              {version ? `v${version}` : 'v0.7.0'} 首个开源论文写作一站式工具！
             </span>
           </a>
         </div>
@@ -155,15 +171,15 @@ export default function HomePage() {
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${downloadOpen ? 'rotate-180' : ''}`} />
             </button>
             {downloadOpen && (
-              <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 w-56 z-50">
-                <div className="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 shadow-xl shadow-slate-900/10 dark:shadow-black/30 overflow-hidden">
+              <div className="absolute top-full left-0 right-0 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 pt-2 sm:w-56 z-50">
+                <div className="mx-3 sm:mx-0 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 shadow-xl shadow-slate-900/10 dark:shadow-black/30 overflow-hidden">
                   {version && (
                     <>
                       <a
                         href={`${downloadBase}/PaperSpark-${version}-mac-arm64.dmg`}
-                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 active:bg-slate-100 dark:active:bg-white/10 touch-manipulation transition-colors"
                       >
-                        <Apple className="w-4 h-4 text-slate-400" />
+                        <AppleIcon className="w-5 h-5 sm:w-4 sm:h-4 text-slate-400" />
                         <div className="flex flex-col">
                           <span>Mac OS (.dmg)</span>
                           <span className="text-[11px] text-slate-400 dark:text-slate-500">Apple Silicon</span>
@@ -172,9 +188,9 @@ export default function HomePage() {
                       <div className="border-t border-slate-100 dark:border-white/5"></div>
                       <a
                         href={`${downloadBase}/PaperSpark-${version}-mac-arm64.zip`}
-                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 active:bg-slate-100 dark:active:bg-white/10 touch-manipulation transition-colors"
                       >
-                        <Apple className="w-4 h-4 text-slate-400" />
+                        <AppleIcon className="w-5 h-5 sm:w-4 sm:h-4 text-slate-400" />
                         <div className="flex flex-col">
                           <span>Mac OS (.zip)</span>
                           <span className="text-[11px] text-slate-400 dark:text-slate-500">Apple Silicon</span>
@@ -183,9 +199,9 @@ export default function HomePage() {
                       <div className="border-t border-slate-100 dark:border-white/5"></div>
                       <a
                         href={`${downloadBase}/PaperSpark-${version}-setup.exe`}
-                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                        className="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 active:bg-slate-100 dark:active:bg-white/10 touch-manipulation transition-colors"
                       >
-                        <Monitor className="w-4 h-4 text-slate-400" />
+                        <WindowsIcon className="w-5 h-5 sm:w-4 sm:h-4 text-slate-400" />
                         <div className="flex flex-col">
                           <span>Windows (.exe)</span>
                           <span className="text-[11px] text-slate-400 dark:text-slate-500">安装包</span>
